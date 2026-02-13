@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Billing System</title>
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+        }
+
+        input {
+            margin: 5px;
+            padding: 5px
+        }
+
+        button {
+            padding: 6px 10px;
+            margin: 5px;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+
+            table,
+            th,
+            td {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🧾 My Shop Billing Software</h1>
+    <!-- <select id="productSelect" size="6">
+  <option value="Tea">Tea</option>
+  <option value="Milk">Milk</option>
+  <option value="Green Tea">Green Tea</option>
+  <option value="Flour">Flour</option>
+  <option value="Maggi">Maggi</option>
+  <option value="Sugar">Sugar</option>
+  <option value="Rice">Rice</option>
+</select> -->
+
+    <!-- <br> -->
+    <select name="productSelect" id="ProductSelect"></select>
+
+    <input type="number" id="price" readonly>
+    <input type="number" id="qty" placeholder="Quantity">
+    <input type="number" id="discount" placeholder="Discount %" value="0">
+    <input type="number" id="gst" placeholder="GST %" value="0">
+
+    <button onclick="addProduct()">Add Product</button>
+
+
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Qty</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody id="billBody"></tbody>
+    </table>
+
+    <h2 id="grandTotal">Grand Total: ₹0.00</h2>
+
+    <button onclick="printBill()">Print Bill</button>
+    <script>
+        let grandTotal = 0;
+        const products = [
+            { name: "Tea", price: 20 },
+            { name: "Milk", price: 30 },
+            { name: "GreenTea", price: 40 },
+            { name: "flour", price: 50 },
+            { name: "Maggi", price: 45 },
+            { name: "Sugar", price: 60 },
+            { name: "Rice", price: 65 }
+
+        ];
+        class Bill {
+            constructor() {
+                this.items = [];
+                this.grandtotal = 0;
+
+            }
+            addItem(product, price, qty, discount, gst) {
+                let total = price * qty;
+
+                total = total - (total * discount / 100);
+                total = total + (total * gst / 100);
+
+                this.items.push({ product, price, qty, total });
+                this.grandtotal += total;
+            }
+            getTotal() {
+                return this.grandtotal;
+            }
+        }
+
+        const bill = new Bill();
+
+
+        const productSelect = document.getElementById("ProductSelect");
+        const priceInput = document.getElementById("price");
+
+
+        products.forEach(p => {
+            const option = document.createElement("option");
+            option.value = p.name;
+            option.textContent = p.name;
+            productSelect.appendChild(option)
+        });
+
+
+
+        productSelect.addEventListener("change", () => {
+            const selected = products.find(p => p.name === productSelect.value);
+            priceInput.value = selected.price;
+        });
+
+        function addProduct() {
+            const selected = products.find(p => p.name === productSelect.value);
+            const qty = parseInt(document.getElementById("qty").value);
+            const discount = parseFloat(document.getElementById("discount").value) || 0;
+            const gst = parseFloat(document.getElementById("gst").value) || 0;
+
+            if (!qty) {
+                alert("Enter Quantity");
+                return;
+            }
+            bill.addItem(selected.name, selected.price, qty, discount, gst);
+
+            const total = (selected.price * qty)
+                - ((selected.price * qty) * discount / 100)
+                + (((selected.price * qty)
+                    - ((selected.price * qty) * discount / 100)) * gst / 100);
+
+            const row = `
+  <tr>
+    <td>${selected.name}</td>
+    <td>₹${selected.price}</td>
+    <td>${qty}</td>
+    <td>₹${total.toFixed(2)}</td>
+  </tr>
+`;
+
+            document.getElementById("billBody").innerHTML += row;
+            document.getElementById("grandTotal").innerText = "Grand Total: ₹" + bill.getTotal().toFixed(2);
+
+        }
+
+        // </script>
+
+</body>
+
+</html>
